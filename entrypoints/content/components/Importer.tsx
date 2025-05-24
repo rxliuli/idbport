@@ -58,6 +58,10 @@ export function Importer() {
       }
       console.error(err)
     },
+    onSettled: () => {
+      setProgress(0)
+      setName('')
+    },
   })
 
   return (

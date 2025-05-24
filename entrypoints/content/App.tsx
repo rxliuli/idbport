@@ -5,7 +5,7 @@ function App() {
   return (
     <>
       <IndexPage />
-      <Toaster richColors={true} />
+      <Toaster richColors={true} closeButton={true} />
     </>
   )
 }

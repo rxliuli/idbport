@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config'
+import { customCommands } from './lib/test/commands'
 
 const browserIncludes = ['src/**/*.browser.test.ts']
 
@@ -23,6 +24,7 @@ export default defineConfig({
             provider: 'playwright',
             // https://vitest.dev/guide/browser/playwright
             instances: [{ browser: 'chromium', headless: true }],
+            commands: customCommands,
           },
         },
       },

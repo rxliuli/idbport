@@ -51,3 +51,31 @@ export function SelectGroup(props: {
     </Select>
   )
 }
+
+// export function SelectGroup(props: {
+//   value?: string
+//   onChange?: (value?: string) => void
+//   options: { label: string; value: string }[]
+//   name?: string
+//   placeholder?: string
+//   className?: string
+//   disabled?: boolean
+//   required?: boolean
+// }) {
+//   return (
+//     <select
+//       value={props.value}
+//       onChange={(ev) => props.onChange?.(ev.target.value)}
+//     >
+//       {props.options.map((option) => (
+//         <option
+//           key={option.value}
+//           value={option.value}
+//           selected={option.value === props.value}
+//         >
+//           {option.label}
+//         </option>
+//       ))}
+//     </select>
+//   )
+// }

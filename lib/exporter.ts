@@ -3,6 +3,7 @@ import { deserialize, serializeAsync } from 'seroval'
 import { sum } from 'es-toolkit'
 import { BlobPlugin } from 'seroval-plugins/web'
 import { ExpectedError } from './error'
+import { TextReader, TextWriter } from './io'
 
 function getNames(db: IDBPDatabase) {
   const names = []
@@ -110,30 +111,30 @@ export async function exportIDB(
   options?: ExportOptions,
 ): Promise<Blob> {
   const db = await openDB(name)
+  const writer = new TextWriter()
   try {
     const meta = await getMeta(db)
     const total = sum(meta.stores.map((it) => it.count))
     let current = 0
-    let text = ''
-    text += (await serializeAsync(meta)) + '\n'
+    writer.writeLine(await serializeAsync(meta))
     for (const { name } of meta.stores) {
       for await (const part of readableStore({
         db,
         name,
-        limit: 10,
+        limit: 100,
         signal: options?.signal,
       })) {
-        text +=
-          (await serializeAsync(
-            {
-              storeName: name,
-              key: part.key,
-              value: part.value,
-            } satisfies ExportItem,
-            {
-              plugins: [BlobPlugin],
-            },
-          )) + '\n'
+        const line = await serializeAsync(
+          {
+            storeName: name,
+            key: part.key,
+            value: part.value,
+          } satisfies ExportItem,
+          {
+            plugins: [BlobPlugin],
+          },
+        )
+        writer.writeLine(line)
         current++
         options?.onProgress({
           meta,
@@ -141,25 +142,37 @@ export async function exportIDB(
         })
       }
     }
-    return new Blob([text], { type: 'text/plain' })
+    await writer.close()
+    return await writer.getData()
   } finally {
     db.close()
+    await writer.close()
   }
 }
 
 export async function importIDB(data: Blob, options?: ExportOptions) {
-  const text = await data.text()
-  const lines = text.split('\n').filter((it) => it.trim() !== '')
-  const meta = deserialize(lines[0]) as ExportMeta
-  const db = await openDB(meta.name, meta.version)
+  const reader = new TextReader(data)
+  const lineReader = reader.readLine().getReader()
+  const metaChunk = await lineReader.read()
+  if (!metaChunk.value) {
+    throw new ExpectedError('data-error', 'Data error')
+  }
+  const meta = deserialize(metaChunk.value) as ExportMeta
+  let db: IDBPDatabase | null = null
   try {
+    db = await openDB(meta.name, meta.version)
     if (db.objectStoreNames.length === 0) {
       throw new ExpectedError('empty-db', 'Empty database')
     }
-    const storeNames = Array.from(db.objectStoreNames)
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i]
-      const item = deserialize(line) as ExportItem
+    const storeNames = getNames(db)
+    const total = meta.stores.reduce((acc, it) => acc + it.count, 0)
+    let i = 1
+    while (true) {
+      const chunk = await lineReader.read()
+      if (chunk.done) {
+        break
+      }
+      const item = deserialize(chunk.value) as ExportItem
       if (!storeNames.includes(item.storeName)) {
         throw new ExpectedError(
           'store-not-found',
@@ -176,13 +189,17 @@ export async function importIDB(data: Blob, options?: ExportOptions) {
       }
       options?.onProgress({
         meta,
-        progress: { current: i, total: lines.length - 1 },
+        progress: {
+          current: i,
+          total: total,
+        },
       })
       if (options?.signal?.aborted) {
         throw new ExpectedError('aborted', 'Aborted')
       }
+      i++
     }
   } finally {
-    db.close()
+    db?.close()
   }
 }

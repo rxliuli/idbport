@@ -120,7 +120,6 @@ describe('export and import for store', () => {
         onProgress: (data) => {
           if (data.progress.current === 1) {
             controller.abort()
-            console.log('aborted', controller.signal.aborted)
           }
         },
       }),
@@ -165,7 +164,7 @@ describe('export and import for store', () => {
     db.close()
   })
   it('export big data', async () => {
-    const users = Array.from({ length: 100 }).map((_, i) => ({
+    const users = Array.from({ length: 1000 }).map((_, i) => ({
       id: i,
       name: `name ${i}`,
     }))
@@ -182,7 +181,7 @@ describe('export and import for store', () => {
       signal: new AbortController().signal,
       onProgress,
     })
-    expect(onProgress).toHaveBeenCalledTimes(100)
+    expect(onProgress).toHaveBeenCalledTimes(1000)
     await db.clear('user')
     expect(await db.count('user')).eq(0)
     await importIDB(data)

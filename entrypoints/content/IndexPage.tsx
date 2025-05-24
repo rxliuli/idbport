@@ -28,7 +28,7 @@ export function IndexPage() {
   return (
     <div
       className={cn(
-        'fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-[calc(50vh-150px)]',
+        'fixed inset-0 bg-black/50 flex items-start justify-center pt-[calc(50vh-150px)]',
         open ? 'fixed' : 'hidden',
       )}
       onClick={onClickMask}
@@ -42,7 +42,7 @@ export function IndexPage() {
             </CardDescription>
           </div>
           <CardAction>
-            <Button variant={'secondary'} size={'icon'} onClick={toggle}>
+            <Button variant={'ghost'} size={'icon'} onClick={toggle}>
               <XIcon className="w-4 h-4" />
             </Button>
           </CardAction>

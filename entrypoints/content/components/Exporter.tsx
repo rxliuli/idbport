@@ -40,15 +40,22 @@ export function Exporter() {
       }
       controller.current.abort()
       controller.current = new AbortController()
+      const start = Date.now()
       setProgress(0)
+      let total = 0
       const blob = await exportIDB(name, {
         onProgress: (data) => {
           setProgress((data.progress.current / data.progress.total) * 100)
+          total = data.progress.total
         },
         signal: controller.current.signal,
       })
       saveAs(blob, `Export-${name}-${new Date().toISOString()}.idb`)
       setProgress(0)
+      const end = Date.now()
+      console.log(
+        `Exported database ${name} in ${end - start}ms, total ${total}`,
+      )
     },
     onSuccess: () => {
       toast.success('Exported database successfully')
