@@ -37,12 +37,21 @@ export function ThemeProvider({
 
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
-        .matches
-        ? 'dark'
-        : 'light'
+      const updateTheme = () => {
+        root.classList.remove('light', 'dark')
+        root.classList.add(systemTheme.matches ? 'dark' : 'light')
+      }
 
-      root.classList.add(systemTheme)
-      return
+      // Set initial theme
+      updateTheme()
+
+      // Listen for changes in system theme
+      systemTheme.addEventListener('change', updateTheme)
+
+      // Clean up listener when component unmounts or theme changes
+      return () => {
+        systemTheme.removeEventListener('change', updateTheme)
+      }
     }
 
     root.classList.add(theme)

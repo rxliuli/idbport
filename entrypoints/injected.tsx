@@ -2,9 +2,23 @@ import ReactDOM from 'react-dom/client'
 import { ShadowProvider } from '@/integrations/shadow/ShadowProvider.tsx'
 import { ThemeProvider } from '@/integrations/theme/ThemeProvider.tsx'
 import App from './content/App'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import styles from './content/style.css?inline'
+import styles2 from 'sonner/dist/styles.css?inline'
+import { toggle } from '@/integrations/dialog/open'
+
+function addStyle(shadow: ShadowRoot, styles: string[]) {
+  const sheets = styles.map((style) => {
+    const sheet = new CSSStyleSheet()
+    sheet.replaceSync(style.replaceAll(':root', ':host'))
+    return sheet
+  })
+  shadow.adoptedStyleSheets = sheets
+}
 
 export default defineUnlistedScript(async () => {
   if (document.querySelector('idb-port-ui')) {
+    toggle()
     return
   }
   const ctx = new ContentScriptContext('injeted.js')
@@ -13,6 +27,11 @@ export default defineUnlistedScript(async () => {
     position: 'modal',
     anchor: 'body',
     onMount: (container) => {
+      const shadowEl = document.querySelector('idb-port-ui') as HTMLElement
+      shadowEl.style.zIndex = '9999'
+      const shadow = shadowEl!.shadowRoot!
+      addStyle(shadow, [styles, styles2])
+
       // Container is a body, and React warns when creating a root on the body, so create a wrapper div
       const app = document.createElement('div')
       container.append(app)
@@ -22,7 +41,9 @@ export default defineUnlistedScript(async () => {
       root.render(
         <ShadowProvider container={container}>
           <ThemeProvider>
-            <App />
+            <QueryClientProvider client={new QueryClient()}>
+              <App />
+            </QueryClientProvider>
           </ThemeProvider>
         </ShadowProvider>,
       )

@@ -1,8 +1,13 @@
-import './style.css'
-import { IndexPage } from './pages/IndexPage'
+import { Toaster } from '@/components/ui/sonner'
+import { IndexPage } from './IndexPage'
 
 function App() {
-  return <IndexPage />
+  return (
+    <>
+      <IndexPage />
+      <Toaster richColors={true} />
+    </>
+  )
 }
 
 export default App
