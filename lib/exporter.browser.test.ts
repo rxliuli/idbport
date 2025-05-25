@@ -47,6 +47,9 @@ describe('export and import for type', () => {
   it('Blob', async () => {
     await receive(new Blob(['test'], { type: 'text/plain' }))
   })
+  it('Binary Blob', async () => {
+    await receive(new Blob([new Uint8Array([128])]))
+  })
 })
 
 describe('export and import for store', () => {

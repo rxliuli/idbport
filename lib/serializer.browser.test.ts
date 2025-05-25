@@ -6,6 +6,9 @@ describe('serializer', () => {
     const value = {
       a: 1,
       b: '2',
+      c: null,
+      d: {},
+      e: [1, 2, 3],
     }
     const str = await stringifyAsync(value)
     const parsed = parse(str)
@@ -21,5 +24,14 @@ describe('serializer', () => {
     const str = await stringifyAsync(value)
     const parsed = parse(str)
     expect(parsed).toEqual(value)
+  })
+  it('binary blob', async () => {
+    async function blob2uint8(blob: Blob) {
+      return new Uint8Array(await blob.arrayBuffer())
+    }
+    const blob = new Blob([new Uint8Array([128])])
+    const str = await stringifyAsync(blob)
+    const parsed = parse(str) as Blob
+    expect(await blob2uint8(blob)).toEqual(await blob2uint8(parsed))
   })
 })
