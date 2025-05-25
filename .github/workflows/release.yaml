@@ -1,6 +1,6 @@
 env:
   DIRECTORY: .output
-  PROJECT_NAME: redirector
+  PROJECT_NAME: idbport
 
 name: Release
 
