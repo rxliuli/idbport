@@ -1,11 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { exportIDB, importIDB } from './exporter'
 import { deleteDB, openDB } from 'idb'
 
-beforeEach(async () => {
+const cleanup = async () => {
   const list = await indexedDB.databases()
   await Promise.all(list.map((it) => deleteDB(it.name!)))
-})
+}
+beforeEach(cleanup)
+afterEach(cleanup)
 
 describe('export and import for type', () => {
   async function receive(value: any) {
@@ -163,7 +165,7 @@ describe('export and import for store', () => {
     expect(await db.count('user')).eq(2)
     db.close()
   })
-  it('export big data', async () => {
+  it('export large data', async () => {
     const users = Array.from({ length: 1000 }).map((_, i) => ({
       id: i,
       name: `name ${i}`,
@@ -186,6 +188,34 @@ describe('export and import for store', () => {
     expect(await db.count('user')).eq(0)
     await importIDB(data)
     expect(await db.count('user')).eq(users.length)
+    db.close()
+  })
+})
+
+describe('export and import for performance', () => {
+  function createLargeBlob(sizeInBytes: number) {
+    const buffer = new Uint8Array(sizeInBytes)
+    for (let i = 0; i < sizeInBytes; i++) {
+      buffer[i] = i % 256
+    }
+    return new Blob([buffer], { type: 'application/octet-stream' })
+  }
+
+  it.skip('export large data', async () => {
+    const db = await openDB<{
+      largeObjects: Uint8Array
+    }>('test-large', 1, {
+      upgrade(db) {
+        db.createObjectStore('largeObjects')
+      },
+    })
+    for (let i = 0; i < 1000; i++) {
+      await db.put(
+        'largeObjects',
+        new Uint8Array(await createLargeBlob(1024 * 1024).arrayBuffer()),
+        i,
+      )
+    }
     db.close()
   })
 })

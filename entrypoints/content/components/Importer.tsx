@@ -19,6 +19,7 @@ export function Importer() {
   useUnmount(stopImport)
   const mutation = useMutation({
     mutationFn: async () => {
+      const start = Date.now()
       controller.current.abort()
       controller.current = new AbortController()
 
@@ -31,16 +32,22 @@ export function Importer() {
         return
       }
       setSelectedFile(file)
+      let total = 0
       await importIDB(file, {
         signal: controller.current.signal,
         onProgress: (data) => {
           if (name !== data.meta.name) {
             setName(data.meta.name)
+            total = data.progress.total
           }
           setProgress((data.progress.current / data.progress.total) * 100)
         },
       })
       toast.success('Import Success')
+      const end = Date.now()
+      console.log(
+        `Imported database ${name} in ${end - start}ms, total ${total}`,
+      )
     },
     onError: (err) => {
       if (err instanceof ExpectedError) {

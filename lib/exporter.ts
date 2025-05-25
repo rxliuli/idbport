@@ -1,9 +1,8 @@
 import { IDBPCursorWithValue, IDBPDatabase, openDB } from 'idb'
-import { deserialize, serializeAsync } from 'seroval'
 import { sum } from 'es-toolkit'
-import { BlobPlugin } from 'seroval-plugins/web'
 import { ExpectedError } from './error'
 import { TextReader, TextWriter } from './io'
+import { parse, stringifyAsync } from './serializer'
 
 function getNames(db: IDBPDatabase) {
   const names = []
@@ -116,7 +115,7 @@ export async function exportIDB(
     const meta = await getMeta(db)
     const total = sum(meta.stores.map((it) => it.count))
     let current = 0
-    writer.writeLine(await serializeAsync(meta))
+    writer.writeLine(await stringifyAsync(meta))
     for (const { name } of meta.stores) {
       for await (const part of readableStore({
         db,
@@ -124,16 +123,11 @@ export async function exportIDB(
         limit: 100,
         signal: options?.signal,
       })) {
-        const line = await serializeAsync(
-          {
-            storeName: name,
-            key: part.key,
-            value: part.value,
-          } satisfies ExportItem,
-          {
-            plugins: [BlobPlugin],
-          },
-        )
+        const line = await stringifyAsync({
+          storeName: name,
+          key: part.key,
+          value: part.value,
+        } satisfies ExportItem)
         writer.writeLine(line)
         current++
         options?.onProgress({
@@ -157,7 +151,7 @@ export async function importIDB(data: Blob, options?: ExportOptions) {
   if (!metaChunk.value) {
     throw new ExpectedError('data-error', 'Data error')
   }
-  const meta = deserialize(metaChunk.value) as ExportMeta
+  const meta = parse(metaChunk.value) as ExportMeta
   let db: IDBPDatabase | null = null
   try {
     db = await openDB(meta.name, meta.version)
@@ -172,7 +166,7 @@ export async function importIDB(data: Blob, options?: ExportOptions) {
       if (chunk.done) {
         break
       }
-      const item = deserialize(chunk.value) as ExportItem
+      const item = parse(chunk.value) as ExportItem
       if (!storeNames.includes(item.storeName)) {
         throw new ExpectedError(
           'store-not-found',

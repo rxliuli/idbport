@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config'
 import { customCommands } from './lib/test/commands'
 
-const browserIncludes = ['src/**/*.browser.test.ts']
+const browserIncludes = ['lib/**/*.browser.test.ts']
 
 export default defineConfig({
   test: {
