@@ -1,8 +1,5 @@
 import ReactDOM from 'react-dom/client'
-import { ShadowProvider } from '@/integrations/shadow/ShadowProvider.tsx'
-import { ThemeProvider } from '@/integrations/theme/ThemeProvider.tsx'
 import App from './content/App'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import styles from './content/style.css?inline'
 import styles2 from 'sonner/dist/styles.css?inline'
 import { toggle } from '@/integrations/dialog/open'
@@ -38,15 +35,7 @@ export default defineUnlistedScript(async () => {
 
       // Create a root on the UI container and render a component
       const root = ReactDOM.createRoot(app)
-      root.render(
-        <ShadowProvider container={container}>
-          <ThemeProvider>
-            <QueryClientProvider client={new QueryClient()}>
-              <App />
-            </QueryClientProvider>
-          </ThemeProvider>
-        </ShadowProvider>,
-      )
+      root.render(<App container={container} />)
       return root
     },
     onRemove: (root) => {

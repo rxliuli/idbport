@@ -36,11 +36,11 @@ export function Importer() {
       await importIDB(file, {
         signal: controller.current.signal,
         onProgress: (data) => {
-          if (name !== data.meta.name) {
-            setName(data.meta.name)
-            total = data.progress.total
-          }
-          setProgress((data.progress.current / data.progress.total) * 100)
+          setName(data.meta.name)
+          total = data.progress.total
+          setProgress(
+            Math.floor((data.progress.current / data.progress.total) * 100),
+          )
         },
       })
       toast.success('Import Success')

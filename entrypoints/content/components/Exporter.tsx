@@ -45,7 +45,9 @@ export function Exporter() {
       let total = 0
       const blob = await exportIDB(name, {
         onProgress: (data) => {
-          setProgress((data.progress.current / data.progress.total) * 100)
+          setProgress(
+            Math.floor((data.progress.current / data.progress.total) * 100),
+          )
           total = data.progress.total
         },
         signal: controller.current.signal,

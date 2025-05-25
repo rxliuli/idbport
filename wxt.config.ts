@@ -5,16 +5,12 @@ export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   vite: () => ({
     plugins: [tailwindcss()] as any,
-    build: {
-      minify: false,
-    },
   }),
   manifestVersion: 3,
   manifest: (env) => {
     const manifest: UserManifest = {
       name: 'IDBPort',
-      description:
-        'A simple and easy-to-use IndexedDB porting tool, which can be used to view the data in IndexedDB and export it to JSON format.',
+      description: 'IndexedDB data Export and Import',
       permissions: ['activeTab', 'scripting'],
       author: {
         email: 'rxliuli@gmail.com',
