@@ -3,7 +3,7 @@
   "description": "Import and export your IndexedDB data",
   "author": "rxliuli",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.1.3",
   "type": "module",
   "scripts": {
     "dev": "wxt",
