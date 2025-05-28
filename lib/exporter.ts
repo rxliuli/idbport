@@ -1,5 +1,4 @@
 import { IDBPCursorWithValue, IDBPDatabase, openDB } from 'idb'
-import { sum } from 'es-toolkit'
 import { ExpectedError } from './error'
 import { TextReader, TextWriter } from './io'
 import { parse, stringifyAsync } from './serializer'
@@ -113,7 +112,7 @@ export async function exportIDB(
   const writer = new TextWriter()
   try {
     const meta = await getMeta(db)
-    const total = sum(meta.stores.map((it) => it.count))
+    const total = meta.stores.reduce((acc, it) => acc + it.count, 0)
     let current = 0
     writer.writeLine(await stringifyAsync(meta))
     for (const { name } of meta.stores) {
