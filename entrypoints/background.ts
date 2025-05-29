@@ -1,12 +1,7 @@
 import { PublicPath } from 'wxt/browser'
 
 export default defineBackground(() => {
-  // browser.runtime.onInstalled.addListener(async () => {
-  //   await browser.tabs.create({
-  //     active: true,
-  //     url: 'https://rxliuli.com/projects/idbport',
-  //   })
-  // })
+  browser.runtime.setUninstallURL('https://forms.gle/VeEXcSUzG73wqu3M9')
   browser.action.onClicked.addListener(async (tab) => {
     const [script] = await browser.scripting.executeScript({
       target: { tabId: tab.id! },

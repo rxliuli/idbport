@@ -151,24 +151,26 @@ export class TextWriter {
   }
 }
 
-function lineBreakTransformer() {
-  let container = ''
-  return new TransformStream<string, string>({
-    start() {
-      container = ''
-    },
-    transform(chunk, controller) {
-      container += chunk
-      const lines = container.split(/\r\n|\n|\r/) // Split by common line terminators
-      container = lines.pop()! // Last part might be incomplete, save it
-      lines.forEach((line) => controller.enqueue(line))
-    },
-    flush(controller) {
-      if (container) {
-        controller.enqueue(container)
-      }
-    },
-  })
+class LineBreakStream extends TransformStream<string, string> {
+  constructor() {
+    let temp = ''
+    super({
+      transform(chunk, controller) {
+        temp += chunk
+        const lines = temp.split('\n')
+        for (let i = 0; i < lines.length - 1; i++) {
+          const it = lines[i]
+          controller.enqueue(it)
+          temp = temp.slice(it.length + 1)
+        }
+      },
+      flush(controller) {
+        if (temp.length !== 0) {
+          controller.enqueue(temp)
+        }
+      },
+    })
+  }
 }
 
 export class TextReader {
@@ -177,7 +179,7 @@ export class TextReader {
   readLine() {
     return this.data
       .stream()
-      .pipeThrough(new TextDecoderStream('utf-8'))
-      .pipeThrough(lineBreakTransformer())
+      .pipeThrough(new TextDecoderStream())
+      .pipeThrough(new LineBreakStream())
   }
 }
