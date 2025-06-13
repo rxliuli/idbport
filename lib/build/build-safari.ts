@@ -34,6 +34,13 @@ async function updateProjectConfig() {
       ),
       `INFOPLIST_KEY_CFBundleDisplayName = $1;\n				INFOPLIST_KEY_LSApplicationCategoryType = "${AppCategory}";`,
     )
+    .replace(
+      new RegExp(
+        `INFOPLIST_KEY_CFBundleDisplayName = ("?${ProjectName}"?);`,
+        'g',
+      ),
+      `INFOPLIST_KEY_CFBundleDisplayName = $1;\n				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;`,
+    )
     .replaceAll(
       `COPY_PHASE_STRIP = NO;`,
       DevelopmentTeam
