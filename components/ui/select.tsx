@@ -5,10 +5,25 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { getShadowRoot } from '@/integrations/shadow/ShadowProvider'
 
+// TODO https://github.com/radix-ui/primitives/issues/1641#issuecomment-2110760141
+const SelectContext = React.createContext<
+  React.Dispatch<React.SetStateAction<boolean>>
+>(() => {})
+
 function Select({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+  const [isOpen, setIsOpen] = React.useState(false)
+  return (
+    <SelectContext.Provider value={setIsOpen}>
+      <SelectPrimitive.Root
+        data-slot="select"
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        {...props}
+      />
+    </SelectContext.Provider>
+  )
 }
 
 function SelectGroup({
@@ -31,8 +46,17 @@ function SelectTrigger({
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: 'sm' | 'default'
 }) {
+  const setIsOpen = React.useContext(SelectContext)
   return (
     <SelectPrimitive.Trigger
+      onPointerDown={(e) => {
+        if (e.pointerType === 'touch') e.preventDefault() // disable the default behavior in mobile
+      }}
+      onPointerUp={(e) => {
+        if (e.pointerType === 'touch') {
+          setIsOpen((prevState) => !prevState) // use onPointerUp to simulate onClick in mobile
+        }
+      }}
       data-slot="select-trigger"
       data-size={size}
       className={cn(
