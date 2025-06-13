@@ -21,7 +21,7 @@ export default defineUnlistedScript(async () => {
   const ctx = new ContentScriptContext('injeted.js')
   const ui = await createShadowRootUi(ctx, {
     name: 'idb-port-ui',
-    position: 'modal',
+    position: 'inline',
     anchor: 'body',
     onMount: (container) => {
       const shadowEl = document.querySelector('idb-port-ui') as HTMLElement
