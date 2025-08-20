@@ -35,6 +35,10 @@ async function updateProjectConfig() {
       `INFOPLIST_KEY_CFBundleDisplayName = $1;\n				INFOPLIST_KEY_LSApplicationCategoryType = "${AppCategory}";`,
     )
     .replace(
+      new RegExp(`GCC_WARN_UNUSED_VARIABLE = YES;`, 'g'),
+      `GCC_WARN_UNUSED_VARIABLE = YES;\n				INFOPLIST_KEY_LSApplicationCategoryType = "${AppCategory}";`,
+    )
+    .replace(
       new RegExp(
         `INFOPLIST_KEY_CFBundleDisplayName = ("?${ProjectName}"?);`,
         'g',
