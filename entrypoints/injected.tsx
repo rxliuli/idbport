@@ -25,6 +25,7 @@ export default defineUnlistedScript(async () => {
     anchor: 'body',
     onMount: (container) => {
       const shadowEl = document.querySelector('idb-port-ui') as HTMLElement
+      shadowEl.style.position = 'fixed'
       shadowEl.style.zIndex = '9999'
       const shadow = shadowEl!.shadowRoot!
       addStyle(shadow, [styles, styles2])
