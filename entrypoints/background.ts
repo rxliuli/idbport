@@ -1,5 +1,3 @@
-import { PublicPath } from 'wxt/browser'
-
 export default defineBackground(() => {
   browser.runtime.setUninstallURL('https://forms.gle/VeEXcSUzG73wqu3M9')
   browser.action.onClicked.addListener(async (tab) => {
@@ -13,7 +11,7 @@ export default defineBackground(() => {
         return false
       },
     })
-    if (script.result) {
+    if (script?.result) {
       browser.scripting.executeScript({
         target: { tabId: tab.id! },
         world: 'MAIN',
@@ -25,7 +23,7 @@ export default defineBackground(() => {
       await browser.scripting.executeScript({
         target: { tabId: tab.id! },
         world: 'MAIN',
-        files: ['/injected.js' as PublicPath],
+        files: ['/injected.js' as ScriptPublicPath],
       })
     }
   })

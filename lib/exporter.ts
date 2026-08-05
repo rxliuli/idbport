@@ -1,4 +1,4 @@
-import { IDBPCursorWithValue, IDBPDatabase, openDB } from 'idb'
+import { type IDBPCursorWithValue, type IDBPDatabase, openDB } from 'idb'
 import { ExpectedError } from './error'
 import { TextReader, TextWriter } from './io'
 import { parse, stringifyAsync } from './serializer'

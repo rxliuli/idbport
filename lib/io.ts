@@ -159,7 +159,7 @@ class LineBreakStream extends TransformStream<string, string> {
         temp += chunk
         const lines = temp.split('\n')
         for (let i = 0; i < lines.length - 1; i++) {
-          const it = lines[i]
+          const it = lines[i]!
           controller.enqueue(it)
           temp = temp.slice(it.length + 1)
         }

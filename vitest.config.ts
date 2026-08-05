@@ -1,11 +1,12 @@
 import { defineConfig } from 'vitest/config'
 import { customCommands } from './lib/test/commands'
+import { playwright } from '@vitest/browser-playwright'
 
 const browserIncludes = ['lib/**/*.browser.test.ts']
 
 export default defineConfig({
   test: {
-    workspace: [
+    projects: [
       {
         test: {
           // an example of file based convention,
@@ -20,8 +21,8 @@ export default defineConfig({
       {
         test: {
           browser: {
+            provider: playwright(),
             enabled: true,
-            provider: 'playwright',
             // https://vitest.dev/guide/browser/playwright
             instances: [{ browser: 'chromium', headless: true }],
             commands: customCommands,

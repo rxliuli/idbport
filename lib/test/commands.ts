@@ -1,5 +1,6 @@
-import { BrowserCommands } from '@vitest/browser/context'
-import { type BrowserCommandContext } from 'vitest/node'
+import type { BrowserCommands } from '@vitest/browser/context'
+import type { BrowserCommandContext } from 'vitest/node'
+import type { Page } from 'playwright'
 
 type _CustomCommand<T extends BrowserCommands> = {
   [K in keyof Omit<T, 'readFile' | 'writeFile' | 'removeFile'>]: T[K] extends (
@@ -11,8 +12,11 @@ type _CustomCommand<T extends BrowserCommands> = {
 
 export const customCommands: _CustomCommand<BrowserCommands> = {
   selectFile: async (ctx, id) => {
-    const fileChooserPromise = ctx.page.waitForEvent('filechooser')
-    await ctx.page.click(`#${id}`)
+    const { page } = ctx.provider.getCommandsContext(ctx.sessionId) as {
+      page: Page
+    }
+    const fileChooserPromise = page.waitForEvent('filechooser')
+    await page.click(`#${id}`)
     const fileChooser = await fileChooserPromise
     await fileChooser.setFiles(__filename)
   },
