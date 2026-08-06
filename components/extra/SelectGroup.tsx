@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { NativeSelect, NativeSelectOption } from './native-select'
 
 export function SelectGroup(props: {
@@ -10,16 +11,13 @@ export function SelectGroup(props: {
   disabled?: boolean
   required?: boolean
 }) {
-  const {
-    value,
-    onChange,
-    options,
-    name,
-    placeholder,
-    className,
-    disabled,
-    required,
-  } = props
+  const { value, onChange, options } = props
+
+  useEffect(() => {
+    if (options.length > 0 && (!value || !options.some((o) => o.value === value))) {
+      onChange?.(options[0]!.value)
+    }
+  }, [options])
 
   return (
     <NativeSelect

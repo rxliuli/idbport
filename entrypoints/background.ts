@@ -3,7 +3,6 @@ export default defineBackground(() => {
   browser.action.onClicked.addListener(async (tab) => {
     const [script] = await browser.scripting.executeScript({
       target: { tabId: tab.id! },
-      world: 'MAIN',
       func: () => {
         if (document.querySelector('idb-port-ui')) {
           return true
@@ -14,7 +13,6 @@ export default defineBackground(() => {
     if (script?.result) {
       browser.scripting.executeScript({
         target: { tabId: tab.id! },
-        world: 'MAIN',
         func: () => {
           document.dispatchEvent(new CustomEvent('dialog:toggle'))
         },
@@ -22,8 +20,7 @@ export default defineBackground(() => {
     } else {
       await browser.scripting.executeScript({
         target: { tabId: tab.id! },
-        world: 'MAIN',
-        files: ['/injected.js' as ScriptPublicPath],
+        files: ['/content-scripts/injecte.js' satisfies ScriptPublicPath],
       })
     }
   })
