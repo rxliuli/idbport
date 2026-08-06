@@ -20,7 +20,7 @@ export default defineBackground(() => {
     } else {
       await browser.scripting.executeScript({
         target: { tabId: tab.id! },
-        files: ['/content-scripts/injecte.js' satisfies ScriptPublicPath],
+        files: ['/content-scripts/injecte.js'],
       })
     }
   })
