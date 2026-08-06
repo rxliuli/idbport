@@ -3,7 +3,7 @@
   "description": "Import and export your IndexedDB data",
   "author": "rxliuli",
   "private": true,
-  "version": "0.1.8",
+  "version": "0.1.9",
   "type": "module",
   "scripts": {
     "dev": "wxt",
@@ -37,7 +37,8 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3",
-    "tw-animate-css": "^1.4.0"
+    "tw-animate-css": "^1.4.0",
+    "shadcn": "^4.16.1"
   },
   "devDependencies": {
     "@extport/wxt": "^0.0.7",

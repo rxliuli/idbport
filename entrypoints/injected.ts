@@ -3,14 +3,32 @@ import App from './content/App'
 import styles from './content/style.css?inline'
 import styles2 from 'sonner/dist/styles.css?inline'
 import { toggle } from '@/integrations/dialog/open'
+import { createElement } from 'react'
 
 function addStyle(shadow: ShadowRoot, styles: string[]) {
-  const sheets = styles.map((style) => {
-    const sheet = new CSSStyleSheet()
-    sheet.replaceSync(style.replaceAll(':root', ':host'))
-    return sheet
+  const css = styles.join('\n').replaceAll(':root', ':host')
+
+  // Extract @property declarations and hoist to document head,
+  // because @property doesn't work inside Shadow DOM <style> elements.
+  // https://github.com/tailwindlabs/tailwindcss/issues/15005
+  const propertyRules: string[] = []
+  const shadowCss = css.replace(/@property\s+[^{]+\{[^}]*\}/g, (match) => {
+    propertyRules.push(match)
+    return ''
   })
-  shadow.adoptedStyleSheets = sheets
+  if (propertyRules.length > 0) {
+    const propStyle = document.createElement('style')
+    propStyle.textContent = propertyRules.join('\n')
+    document.head.appendChild(propStyle)
+  }
+
+  const style = document.createElement('style')
+  style.textContent = shadowCss
+  if (shadow.firstChild) {
+    shadow.insertBefore(style, shadow.firstChild)
+  } else {
+    shadow.appendChild(style)
+  }
 }
 
 export default defineUnlistedScript(async () => {
@@ -25,8 +43,8 @@ export default defineUnlistedScript(async () => {
     anchor: 'body',
     onMount: (container) => {
       const shadowEl = document.querySelector('idb-port-ui') as HTMLElement
-      shadowEl.style.position = 'fixed'
-      shadowEl.style.zIndex = '9999'
+      container.style.position = 'fixed'
+      container.style.zIndex = '9999'
       const shadow = shadowEl!.shadowRoot!
       addStyle(shadow, [styles, styles2])
 
@@ -36,7 +54,7 @@ export default defineUnlistedScript(async () => {
 
       // Create a root on the UI container and render a component
       const root = ReactDOM.createRoot(app)
-      root.render(<App container={container} />)
+      root.render(createElement(App, { container }))
       return root
     },
     onRemove: (root) => {
