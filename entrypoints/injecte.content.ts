@@ -6,7 +6,6 @@ import { toggle } from '@/integrations/dialog/open'
 import { createElement } from 'react'
 
 export default defineContentScript({
-  matches: ['<all_urls>'],
   cssInjectionMode: 'ui',
   registration: 'runtime',
   async main(ctx) {

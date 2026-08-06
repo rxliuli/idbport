@@ -53,6 +53,13 @@ export default defineConfig({
     }
     return manifest
   },
+  hooks: {
+    'build:manifestGenerated': (_wxt, manifest) => {
+      if (manifest.content_scripts?.length === 0) {
+        delete manifest.content_scripts
+      }
+    },
+  },
   webExt: {
     disabled: true,
   },
