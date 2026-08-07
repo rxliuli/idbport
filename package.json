@@ -42,7 +42,7 @@
     "shadcn": "^4.16.1"
   },
   "devDependencies": {
-    "@extport/wxt": "^0.0.7",
+    "@extport/wxt": "^0.0.9",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
