@@ -3,7 +3,7 @@
   "description": "Import and export your IndexedDB data",
   "author": "rxliuli",
   "private": true,
-  "version": "0.1.13",
+  "version": "0.1.14",
   "type": "module",
   "packageManager": "pnpm@10.34.5",
   "scripts": {
