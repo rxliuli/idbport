@@ -25,7 +25,7 @@ export default defineConfig({
     const manifest: UserManifest = {
       name: 'IDBPort',
       description: 'IndexedDB data Export and Import',
-      permissions: ['activeTab', 'scripting'],
+      permissions: ['storage', 'activeTab', 'scripting'],
       author: {
         email: 'rxliuli@gmail.com',
       },
