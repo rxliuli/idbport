@@ -20,7 +20,7 @@
     "test:browser": "vitest --workspace=vitest.workspace.ts"
   },
   "dependencies": {
-    "@extport/sdk": "^0.0.9",
+    "@extport/sdk": "^0.0.10",
     "@rxliuli/file-saver": "^2.0.5",
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-query": "^5.101.4",
@@ -42,7 +42,7 @@
     "shadcn": "^4.16.1"
   },
   "devDependencies": {
-    "@extport/wxt": "^0.0.9",
+    "@extport/wxt": "^0.0.12",
     "@types/node": "^26.1.2",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
