@@ -58,6 +58,17 @@ export default defineConfig({
       if (manifest.content_scripts?.length === 0) {
         // delete manifest.content_scripts
       }
+      // The content script is registered at runtime (no `matches`), so WXT
+      // generates the CSS `web_accessible_resources` entry with an empty
+      // `matches` array, which makes the browser refuse to load the shadow-root
+      // stylesheet (ERR_BLOCKED_BY_CLIENT) and leaves the UI unstyled.
+      // Since the UI can be injected into any tab via activeTab, allow all origins.
+      manifest.web_accessible_resources?.forEach((entry) => {
+        if (typeof entry === 'string') return
+        if (entry.matches?.length === 0) {
+          entry.matches = ['<all_urls>']
+        }
+      })
     },
   },
   webExt: {
